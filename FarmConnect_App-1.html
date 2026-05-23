@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FarmConnect – Laborer App</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --green:#1db97a;--green-dark:#0f6e56;--green-light:#e1f5ee;
+  --bg:#0d0d0d;--card:#1e1e1e;--card2:#161616;
+  --text:#f0f0f0;--muted:#888;--border:#2a2a2a;
+  --amber:#f0a030;--blue:#5bc8f5;--purple:#b080f0;--red:#e24b4a;
+}
+html,body{height:100%;background:#111;display:flex;justify-content:center;align-items:flex-start;font-family:'Nunito',sans-serif;}
+.device{width:100%;max-width:390px;min-height:100vh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;padding-bottom:72px;}
+.screen.active{display:flex;}
+
+/* TOPBAR */
+.topbar{background:var(--green);padding:20px 16px 22px;flex-shrink:0;}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.greet-sm{font-size:12px;color:rgba(255,255,255,0.8);font-weight:500;}
+.greet-name{font-size:20px;font-weight:800;color:#fff;}
+.av{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;border:2px solid rgba(255,255,255,0.4);}
+.att-box{background:rgba(0,0,0,0.2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.att-lbl{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;}
+.att-val{font-size:14px;font-weight:700;color:#fff;}
+.ci-btn{background:#fff;color:var(--green-dark);border:none;border-radius:20px;padding:7px 16px;font-size:12px;font-weight:800;cursor:pointer;transition:transform .1s;}
+.ci-btn:active{transform:scale(.96);}
+
+/* BODY */
+.body{padding:16px 14px;display:flex;flex-direction:column;gap:16px;}
+.sec-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat{background:var(--card);border-radius:14px;padding:12px 6px;text-align:center;border:1px solid var(--border);}
+.stat-n{font-size:24px;font-weight:800;color:var(--green);}
+.stat-l{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+
+/* TASK CARDS */
+.tcard{background:var(--card);border-radius:16px;padding:14px;display:flex;gap:12px;cursor:pointer;border:1px solid var(--border);transition:background .15s,transform .1s;}
+.tcard:active{background:#252525;transform:scale(.98);}
+.ticon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.tinfo{flex:1;min-width:0;}
+.trow{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;}
+.tname{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.tzone{font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+.pbar{height:5px;background:#2a2a2a;border-radius:4px;overflow:hidden;}
+.pfill{height:100%;border-radius:4px;transition:width .4s;}
+
+/* BADGES */
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.b-ip{background:#1a3a50;color:var(--blue);}
+.b-pn{background:#3a2a10;color:var(--amber);}
+.b-dn{background:#1a3a2a;color:var(--green);}
+.b-new{background:#2a1a3a;color:var(--purple);}
+.b-urg{background:#3a1a1a;color:var(--red);}
+
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#141414;border-top:1px solid var(--border);display:flex;padding:10px 0 14px;z-index:10;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:2px 0;transition:transform .1s;}
+.ni:active{transform:scale(.9);}
+.ni-icon{font-size:20px;color:#555;transition:color .2s;}
+.ni-lbl{font-size:10px;color:#555;font-weight:600;transition:color .2s;}
+.ni.on .ni-icon,.ni.on .ni-lbl{color:var(--green);}
+
+/* PAGE TITLE */
+.page-title{font-size:18px;font-weight:800;color:var(--text);padding:18px 14px 4px;}
+
+/* SEARCH */
+.search-row{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin:10px 14px 0;}
+.search-row input{background:transparent;border:none;outline:none;color:var(--text);font-size:13px;flex:1;font-family:'Nunito',sans-serif;font-weight:500;}
+.search-row input::placeholder{color:#555;}
+.filter-row{display:flex;gap:6px;padding:10px 14px 0;overflow-x:auto;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fc{font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--border);color:var(--muted);cursor:pointer;white-space:nowrap;background:var(--card);transition:all .15s;}
+.fc.on{background:#1a3a2a;color:var(--green);border-color:var(--green);}
+
+/* JOB CARDS */
+.jlist{padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+.jcard{background:var(--card);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:7px;cursor:pointer;border:1px solid var(--border);transition:background .15s,transform .1s;}
+.jcard:active{background:#252525;transform:scale(.98);}
+.jtitle{font-size:14px;font-weight:700;color:var(--text);}
+.jmeta{font-size:12px;color:var(--muted);font-weight:500;}
+.jrow{display:flex;align-items:center;justify-content:space-between;}
+.pay{font-size:14px;font-weight:800;color:var(--green);}
+
+/* DETAIL SCREEN */
+.detail-back{padding:14px 14px 0;font-size:13px;color:var(--green);cursor:pointer;display:flex;align-items:center;gap:5px;font-weight:700;}
+.detail-body{padding:14px;display:flex;flex-direction:column;gap:12px;}
+.detail-title{font-size:18px;font-weight:800;color:var(--text);}
+.detail-meta{font-size:13px;color:var(--muted);font-weight:500;}
+.detail-section{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);}
+.detail-sec-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+.drow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.drow:last-child{border-bottom:none;}
+.drow-lbl{font-size:12px;color:var(--muted);width:90px;flex-shrink:0;font-weight:600;}
+.drow-val{font-size:13px;color:#ddd;flex:1;font-weight:600;}
+.action-btn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;width:100%;font-family:'Nunito',sans-serif;transition:transform .1s,background .2s;}
+.action-btn:active{transform:scale(.97);}
+.action-btn.done{background:#333;color:#666;}
+
+/* REPORT */
+.rcard{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);}
+.rcard-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+.earn-big{font-size:30px;font-weight:800;color:var(--green);}
+.earn-sub{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-lbl{font-size:11px;color:var(--muted);width:30px;text-align:right;font-weight:600;}
+.bar-track{flex:1;height:9px;background:#222;border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--green);border-radius:5px;}
+.bar-val{font-size:11px;color:var(--muted);width:32px;font-weight:600;}
+
+/* PROFILE */
+.pcard{background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--border);}
+.pav{width:68px;height:68px;border-radius:50%;background:#1a3a2a;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--green);margin:0 auto 10px;border:3px solid var(--green);}
+.pname{font-size:18px;font-weight:800;color:var(--text);text-align:center;}
+.prole{font-size:12px;color:var(--muted);text-align:center;margin-top:3px;font-weight:500;}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
+.ps{background:var(--card2);border-radius:12px;padding:11px 6px;text-align:center;}
+.ps-n{font-size:18px;font-weight:800;color:var(--green);}
+.ps-l{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+.chip{background:#1a3a2a;color:var(--green);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;}
+.skill-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.rev-item{padding:10px 0;border-bottom:1px solid var(--border);}
+.rev-item:last-child{border-bottom:none;}
+.rev-stars{font-size:12px;color:var(--amber);margin-bottom:3px;}
+.rev-text{font-size:12px;color:#ccc;line-height:1.5;font-weight:500;}
+.rev-by{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;}
+
+/* NOTIFICATIONS */
+.notif{background:var(--card);border-radius:14px;padding:12px 14px;margin:0 14px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;border:1px solid var(--border);}
+.notif+.notif{margin-top:8px;}
+.ndot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px;}
+.ndot.read{background:#333;}
+.ntxt{font-size:13px;color:#ddd;line-height:1.45;font-weight:500;}
+.ntime{font-size:11px;color:var(--muted);margin-top:3px;font-weight:500;}
+
+/* TOAST */
+.toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20;font-family:'Nunito',sans-serif;}
+.toast.show{opacity:1;}
+
+/* ATT GRID */
+.att-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:6px;}
+.att-day{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
+.att-p{background:var(--green);color:#085041;}
+.att-a{background:#222;color:#555;}
+
+.notif-list{padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+</style>
+</head>
+<body>
+<div class="device" id="app">
+  <div class="toast" id="toast"></div>
+
+  <!-- HOME -->
+  <div class="screen active" id="s-home">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div><div class="greet-sm">Good morning,</div><div class="greet-name">Namitha</div></div>
+        <div class="av" onclick="nav('s-profile')">N</div>
+      </div>
+      <div class="att-box">
+        <div><div class="att-lbl">Attendance status</div><div class="att-val" id="att-val">Checked out</div></div>
+        <button class="ci-btn" id="ci-btn" onclick="toggleCheckin()">Check in</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="sec-title">Today's overview</div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-n">5</div><div class="stat-l">Tasks assigned</div></div>
+        <div class="stat"><div class="stat-n" id="done-count">2</div><div class="stat-l">Completed</div></div>
+        <div class="stat"><div class="stat-n" id="pend-count">3</div><div class="stat-l">Pending</div></div>
+      </div>
+      <div class="sec-title">My tasks</div>
+      <div class="tcard" onclick="openTask(0)">
+        <div class="ticon" style="background:#1a3a2a;">🌱</div>
+        <div class="tinfo">
+          <div class="trow"><div class="tname">Paddy seedling — Block A</div><span class="badge b-ip" id="t0-badge">In progress</span></div>
+          <div class="tzone">Zone 3 · Row 12–24</div>
+          <div class="pbar"><div class="pfill" id="t0-bar" style="background:#1db97a;width:60%"></div></div>
+        </div>
+      </div>
+      <div class="tcard" onclick="openTask(1)">
+        <div class="ticon" style="background:#1a2a3a;">💧</div>
+        <div class="tinfo">
+          <div class="trow"><div class="tname">Irrigation check — Block B</div><span class="badge b-pn" id="t1-badge">Pending</span></div>
+          <div class="tzone">Zone 5 · All rows</div>
+          <div class="pbar"><div class="pfill" id="t1-bar" style="background:#444;width:10%"></div></div>
+        </div>
+      </div>
+      <div class="tcard" onclick="openTask(2)">
+        <div class="ticon" style="background:#1a3a1a;">🌿</div>
+        <div class="tinfo">
+          <div class="trow"><div class="tname">Fertiliser application</div><span class="badge b-dn" id="t2-badge">Done</span></div>
+          <div class="tzone">Zone 1 · Morning shift</div>
+          <div class="pbar"><div class="pfill" id="t2-bar" style="background:#1db97a;width:100%"></div></div>
+        </div>
+      </div>
+      <div class="tcard" onclick="openTask(3)">
+        <div class="ticon" style="background:#2a1a3a;">🚜</div>
+        <div class="tinfo">
+          <div class="trow"><div class="tname">Tractor maintenance</div><span class="badge b-new" id="t3-badge">New</span></div>
+          <div class="tzone">Equipment yard · All machines</div>
+          <div class="pbar"><div class="pfill" id="t3-bar" style="background:#444;width:0%"></div></div>
+        </div>
+      </div>
+      <div class="tcard" onclick="openTask(4)">
+        <div class="ticon" style="background:#3a1a1a;">🌾</div>
+        <div class="tinfo">
+          <div class="trow"><div class="tname">Wheat harvesting prep</div><span class="badge b-pn" id="t4-badge">Pending</span></div>
+          <div class="tzone">North field · All zones</div>
+          <div class="pbar"><div class="pfill" id="t4-bar" style="background:#444;width:5%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOBS -->
+  <div class="screen" id="s-jobs">
+    <div class="page-title">Job listings</div>
+    <div class="search-row">
+      <span style="font-size:16px;color:#555;">🔍</span>
+      <input type="text" placeholder="Search jobs, location..." id="job-search" oninput="filterJobs()">
+    </div>
+    <div class="filter-row">
+      <div class="fc on" onclick="setFilter(this,'All')">All</div>
+      <div class="fc" onclick="setFilter(this,'Urgent')">Urgent</div>
+      <div class="fc" onclick="setFilter(this,'Daily')">Daily wage</div>
+      <div class="fc" onclick="setFilter(this,'Seasonal')">Seasonal</div>
+      <div class="fc" onclick="setFilter(this,'Contract')">Contract</div>
+    </div>
+    <div class="jlist" id="job-list">
+      <div class="jcard" onclick="openJob(0)">
+        <div class="jrow"><div class="jtitle">Paddy harvesting laborers</div><span class="badge b-urg">Urgent</span></div>
+        <div class="jmeta">📍 Mysore, KA &nbsp;·&nbsp; Daily wage</div>
+        <div class="jrow"><div class="pay">₹650 / day</div><div style="font-size:11px;color:#555;font-weight:600;">8 openings</div></div>
+      </div>
+      <div class="jcard" onclick="openJob(1)">
+        <div class="jrow"><div class="jtitle">Sugarcane cutting team</div><span class="badge b-pn">Seasonal</span></div>
+        <div class="jmeta">📍 Belgaum, KA &nbsp;·&nbsp; Seasonal</div>
+        <div class="jrow"><div class="pay">₹18,000 / month</div><div style="font-size:11px;color:#555;font-weight:600;">12 openings</div></div>
+      </div>
+      <div class="jcard" onclick="openJob(2)">
+        <div class="jrow"><div class="jtitle">Irrigation pipe laying</div><span class="badge b-dn">Daily wage</span></div>
+        <div class="jmeta">📍 Mysuru, KA &nbsp;·&nbsp; Daily wage</div>
+        <div class="jrow"><div class="pay">₹700 / day</div><div style="font-size:11px;color:#555;font-weight:600;">4 openings</div></div>
+      </div>
+      <div class="jcard" onclick="openJob(3)">
+        <div class="jrow"><div class="jtitle">Vegetable farm assistant</div><span class="badge b-new">New</span></div>
+        <div class="jmeta">📍 Pune, MH &nbsp;·&nbsp; Daily wage</div>
+        <div class="jrow"><div class="pay">₹550 / day</div><div style="font-size:11px;color:#555;font-weight:600;">6 openings</div></div>
+      </div>
+      <div class="jcard" onclick="openJob(4)">
+        <div class="jrow"><div class="jtitle">Drip irrigation technician</div><span class="badge b-urg">Urgent</span></div>
+        <div class="jmeta">📍 Nashik, MH &nbsp;·&nbsp; Contract</div>
+        <div class="jrow"><div class="pay">₹900 / day</div><div style="font-size:11px;color:#555;font-weight:600;">2 openings</div></div>
+      </div>
+      <div class="jcard" onclick="openJob(5)">
+        <div class="jrow"><div class="jtitle">Cotton picking workers</div><span class="badge b-pn">Seasonal</span></div>
+        <div class="jmeta">📍 Wardha, MH &nbsp;·&nbsp; Seasonal</div>
+        <div class="jrow"><div class="pay">₹15,000 / month</div><div style="font-size:11px;color:#555;font-weight:600;">20 openings</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="screen" id="s-report">
+    <div class="page-title">My report</div>
+    <div class="body">
+      <div class="rcard">
+        <div class="rcard-title">This month's earnings</div>
+        <div class="earn-big">₹12,400</div>
+        <div class="earn-sub">May 2026 &nbsp;·&nbsp; 19 days worked</div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-title">Weekly task completion</div>
+        <div class="bar-row"><div class="bar-lbl">Mon</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">5/5</div></div>
+        <div class="bar-row"><div class="bar-lbl">Tue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-val">4/5</div></div>
+        <div class="bar-row"><div class="bar-lbl">Wed</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-val">3/5</div></div>
+        <div class="bar-row"><div class="bar-lbl">Thu</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">5/5</div></div>
+        <div class="bar-row"><div class="bar-lbl">Fri</div><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><div class="bar-val">2/5</div></div>
+        <div class="bar-row"><div class="bar-lbl">Sat</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-val">3/5</div></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-title">Attendance — May 2026</div>
+        <div class="att-grid" id="att-grid"></div>
+        <div style="display:flex;gap:14px;margin-top:10px;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;font-weight:600;"><div style="width:10px;height:10px;border-radius:3px;background:#1db97a;"></div>Present</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;font-weight:600;"><div style="width:10px;height:10px;border-radius:3px;background:#222;"></div>Absent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="screen" id="s-notif">
+    <div class="page-title">Notifications</div>
+    <div class="notif-list">
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot"></div>
+        <div><div class="ntxt">New job posted near you: Paddy harvesting in Mysore — ₹650/day</div><div class="ntime">2 minutes ago</div></div>
+      </div>
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot"></div>
+        <div><div class="ntxt">Murugan Farm has confirmed your attendance for today.</div><div class="ntime">1 hour ago</div></div>
+      </div>
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot"></div>
+        <div><div class="ntxt">Your wage of ₹650 for May 21 has been processed.</div><div class="ntime">Yesterday, 6:00 PM</div></div>
+      </div>
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot read"></div>
+        <div><div class="ntxt" style="color:#888;">Rajesh Agro gave you a 5-star rating. Check your profile!</div><div class="ntime">2 days ago</div></div>
+      </div>
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot read"></div>
+        <div><div class="ntxt" style="color:#888;">Your application for Sugarcane cutting team in Belgaum was viewed by the employer.</div><div class="ntime">3 days ago</div></div>
+      </div>
+      <div class="notif" onclick="markRead(this)">
+        <div class="ndot read"></div>
+        <div><div class="ntxt" style="color:#888;">Reminder: Irrigation check task is pending. Please complete by evening.</div><div class="ntime">4 days ago</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="s-profile">
+    <div class="page-title">My profile</div>
+    <div class="body">
+      <div class="pcard">
+        <div class="pav">N</div>
+        <div class="pname">Namitha</div>
+        <div class="prole">Farm laborer &nbsp;·&nbsp; Mysore, Karnataka</div>
+        <div class="pstats">
+          <div class="ps"><div class="ps-n">4.8</div><div class="ps-l">Rating</div></div>
+          <div class="ps"><div class="ps-n">127</div><div class="ps-l">Jobs done</div></div>
+          <div class="ps"><div class="ps-n">3 yrs</div><div class="ps-l">Experience</div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;">
+          <div class="drow"><span class="drow-lbl">📞 Phone</span><span class="drow-val">+91 95131 05575</span></div>
+          <div class="drow"><span class="drow-lbl">📍 Location</span><span class="drow-val">Mysore, KA</span></div>
+          <div class="drow"><span class="drow-lbl">🌾 Crops</span><span class="drow-val">Paddy, Sugarcane, Wheat</span></div>
+          <div class="drow"><span class="drow-lbl">💰 Wage</span><span class="drow-val" style="color:#1db97a;">₹650 / day</span></div>
+        </div>
+        <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.07em;margin-top:12px;font-weight:700;">Skills</div>
+        <div class="skill-chips">
+          <div class="chip">Harvesting</div>
+          <div class="chip">Irrigation</div>
+          <div class="chip">Seedling</div>
+          <div class="chip">Fertilising</div>
+          <div class="chip">Tractor operation</div>
+          <div class="chip">Drip irrigation</div>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-title">Recent reviews</div>
+        <div class="rev-item">
+          <div class="rev-stars">★★★★★</div>
+          <div class="rev-text">Very hardworking, came on time every day. Highly recommend for any farm work.</div>
+          <div class="rev-by">Rajesh Farm &nbsp;·&nbsp; 2 weeks ago</div>
+        </div>
+        <div class="rev-item">
+          <div class="rev-stars">★★★★☆</div>
+          <div class="rev-text">Good worker, knows paddy harvesting well. Will hire again next season.</div>
+          <div class="rev-by">Green Acres &nbsp;·&nbsp; 1 month ago</div>
+        </div>
+        <div class="rev-item">
+          <div class="rev-stars">★★★★★</div>
+          <div class="rev-text">Excellent at irrigation work. Very responsible and skilled.</div>
+          <div class="rev-by">Murugan Farm &nbsp;·&nbsp; 2 months ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK DETAIL -->
+  <div class="screen" id="s-task-detail">
+    <div class="detail-back" onclick="nav('s-home')">← Back to home</div>
+    <div class="detail-body">
+      <div class="detail-title" id="dt-title"></div>
+      <div class="detail-meta" id="dt-meta"></div>
+      <div class="detail-section">
+        <div class="detail-sec-lbl">Progress</div>
+        <div class="pbar" style="height:10px;"><div class="pfill" id="dt-bar"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+          <span style="font-size:12px;color:#888;font-weight:600;" id="dt-pct"></span>
+          <span style="font-size:12px;font-weight:700;" id="dt-status-lbl"></span>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-sec-lbl">Details</div>
+        <div class="drow"><span class="drow-lbl">Assigned by</span><span class="drow-val" id="dt-farmer"></span></div>
+        <div class="drow"><span class="drow-lbl">Shift</span><span class="drow-val" id="dt-shift"></span></div>
+        <div class="drow"><span class="drow-lbl">Pay</span><span class="drow-val" id="dt-pay" style="color:#1db97a;"></span></div>
+      </div>
+      <button class="action-btn" id="dt-action-btn" onclick="markDone()"></button>
+    </div>
+  </div>
+
+  <!-- JOB DETAIL -->
+  <div class="screen" id="s-job-detail">
+    <div class="detail-back" onclick="nav('s-jobs')">← Back to jobs</div>
+    <div class="detail-body">
+      <div class="detail-title" id="jd-title"></div>
+      <div class="detail-meta" id="jd-meta"></div>
+      <div class="detail-section">
+        <div class="detail-sec-lbl">Job info</div>
+        <div class="drow"><span class="drow-lbl">Farmer</span><span class="drow-val" id="jd-farmer"></span></div>
+        <div class="drow"><span class="drow-lbl">Pay</span><span class="drow-val" id="jd-pay" style="color:#1db97a;"></span></div>
+        <div class="drow"><span class="drow-lbl">Duration</span><span class="drow-val" id="jd-dur"></span></div>
+        <div class="drow"><span class="drow-lbl">Openings</span><span class="drow-val" id="jd-open"></span></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-sec-lbl">Requirements</div>
+        <div style="font-size:13px;color:#ccc;line-height:1.7;font-weight:500;" id="jd-req"></div>
+      </div>
+      <button class="action-btn" id="jd-apply-btn" onclick="applyJob()"></button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav" id="bnav">
+    <div class="ni on" onclick="nav('s-home')" id="ni-home"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></div>
+    <div class="ni" onclick="nav('s-jobs')" id="ni-jobs"><span class="ni-icon">💼</span><span class="ni-lbl">Jobs</span></div>
+    <div class="ni" onclick="nav('s-report')" id="ni-report"><span class="ni-icon">📊</span><span class="ni-lbl">Report</span></div>
+    <div class="ni" onclick="nav('s-notif')" id="ni-notif"><span class="ni-icon">🔔</span><span class="ni-lbl">Alerts</span></div>
+    <div class="ni" onclick="nav('s-profile')" id="ni-profile"><span class="ni-icon">👤</span><span class="ni-lbl">Profile</span></div>
+  </div>
+</div>
+
+<script>
+var checkedIn=false;
+var currentTask=0,currentJob=0;
+var filterVal='All';
+var appliedJobs={};
+
+var taskData=[
+  {name:'Paddy seedling — Block A',zone:'Zone 3 · Row 12–24',pct:60,status:'In progress',farmer:'Murugan Farm',shift:'Morning (6am–12pm)',pay:'₹650',badgeClass:'b-ip'},
+  {name:'Irrigation check — Block B',zone:'Zone 5 · All rows',pct:10,status:'Pending',farmer:'Rajesh Agro',shift:'Afternoon (1pm–5pm)',pay:'₹500',badgeClass:'b-pn'},
+  {name:'Fertiliser application',zone:'Zone 1 · Morning shift',pct:100,status:'Done',farmer:'Green Acres',shift:'Morning (6am–12pm)',pay:'₹600',badgeClass:'b-dn'},
+  {name:'Tractor maintenance',zone:'Equipment yard · All machines',pct:0,status:'New',farmer:'Farm Manager',shift:'Full day',pay:'₹700',badgeClass:'b-new'},
+  {name:'Wheat harvesting prep',zone:'North field · All zones',pct:5,status:'Pending',farmer:'Murugan Farm',shift:'Afternoon (1pm–6pm)',pay:'₹650',badgeClass:'b-pn'}
+];
+
+var jobData=[
+  {title:'Paddy harvesting laborers',loc:'Mysore, KA',type:'Urgent',pay:'₹650 / day',farmer:'Murugan Farm Collective',dur:'15 days',open:'8 openings',req:'Experience in paddy harvesting required. Must be able to work from 6am. Food and accommodation provided by the farm.'},
+  {title:'Sugarcane cutting team',loc:'Belgaum, KA',type:'Seasonal',pay:'₹18,000 / month',farmer:'Karnataka Sugar Co.',dur:'3 months',open:'12 openings',req:'Prior sugarcane cutting experience preferred. Team of 4 required together. Transport provided from town. Accommodation available.'},
+  {title:'Irrigation pipe laying',loc:'Mysuru, KA',type:'Daily',pay:'₹700 / day',farmer:'Gowda Horticulture',dur:'10 days',open:'4 openings',req:'Physical fitness required. Knowledge of drip and sprinkler irrigation is a plus. All tools and equipment provided on site.'},
+  {title:'Vegetable farm assistant',loc:'Pune, MH',type:'Daily',pay:'₹550 / day',farmer:'Sahyadri Farm',dur:'Ongoing',open:'6 openings',req:'General farming knowledge helpful. Help with planting, weeding, and harvesting vegetables. Flexible hours, part-time also considered.'},
+  {title:'Drip irrigation technician',loc:'Nashik, MH',type:'Contract',pay:'₹900 / day',farmer:'Nashik Grape Estate',dur:'7 days',open:'2 openings',req:'Must have hands-on experience installing drip irrigation systems. Technical knowledge and previous work proof essential for this role.'},
+  {title:'Cotton picking workers',loc:'Wardha, MH',type:'Seasonal',pay:'₹15,000 / month',farmer:'Vidarbha Cotton Farm',dur:'2 months',open:'20 openings',req:'No prior experience needed. Training provided on day 1. Group work. Daily wages guaranteed. Meals provided during work hours.'}
+];
+
+function nav(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  var detail=['s-task-detail','s-job-detail'];
+  document.getElementById('bnav').style.display=detail.indexOf(id)>=0?'none':'flex';
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var map={
+    's-home':'ni-home','s-jobs':'ni-jobs',
+    's-report':'ni-report','s-notif':'ni-notif','s-profile':'ni-profile'
+  };
+  if(map[id]) document.getElementById(map[id]).classList.add('on');
+  document.getElementById(id).scrollTop=0;
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+function toggleCheckin(){
+  checkedIn=!checkedIn;
+  document.getElementById('att-val').textContent=checkedIn?'Checked in':'Checked out';
+  document.getElementById('ci-btn').textContent=checkedIn?'Check out':'Check in';
+  showToast(checkedIn?'✅ Checked in successfully!':'👋 Checked out. Good work today!');
+}
+
+function openTask(i){
+  currentTask=i;var d=taskData[i];
+  document.getElementById('dt-title').textContent=d.name;
+  document.getElementById('dt-meta').textContent=d.zone;
+  document.getElementById('dt-bar').style.width=d.pct+'%';
+  document.getElementById('dt-bar').style.background=d.pct===100?'#1db97a':'#1db97a';
+  document.getElementById('dt-pct').textContent=d.pct+'% complete';
+  var sl=document.getElementById('dt-status-lbl');
+  sl.textContent=d.status;
+  sl.style.color=d.status==='Done'?'#1db97a':d.status==='Pending'?'#f0a030':'#5bc8f5';
+  document.getElementById('dt-farmer').textContent=d.farmer;
+  document.getElementById('dt-shift').textContent=d.shift;
+  document.getElementById('dt-pay').textContent=d.pay;
+  var btn=document.getElementById('dt-action-btn');
+  if(d.status==='Done'){btn.textContent='✓ Task completed';btn.className='action-btn done';}
+  else{btn.textContent='Mark as done ✓';btn.className='action-btn';}
+  nav('s-task-detail');
+}
+
+function markDone(){
+  var d=taskData[currentTask];
+  if(d.status==='Done'){showToast('Task already completed!');return;}
+  d.status='Done';d.pct=100;
+  document.getElementById('dt-bar').style.width='100%';
+  document.getElementById('dt-pct').textContent='100% complete';
+  document.getElementById('dt-status-lbl').textContent='Done';
+  document.getElementById('dt-status-lbl').style.color='#1db97a';
+  document.getElementById('dt-action-btn').textContent='✓ Task completed';
+  document.getElementById('dt-action-btn').className='action-btn done';
+  var b=document.getElementById('t'+currentTask+'-badge');
+  b.textContent='Done';b.className='badge b-dn';
+  var bar=document.getElementById('t'+currentTask+'-bar');
+  bar.style.width='100%';bar.style.background='#1db97a';
+  var done=taskData.filter(function(t){return t.status==='Done';}).length;
+  var pend=taskData.filter(function(t){return t.status!=='Done';}).length;
+  document.getElementById('done-count').textContent=done;
+  document.getElementById('pend-count').textContent=pend;
+  showToast('✅ Task marked as done!');
+}
+
+function openJob(i){
+  currentJob=i;var j=jobData[i];
+  document.getElementById('jd-title').textContent=j.title;
+  document.getElementById('jd-meta').textContent='📍 '+j.loc+' · '+j.type;
+  document.getElementById('jd-farmer').textContent=j.farmer;
+  document.getElementById('jd-pay').textContent=j.pay;
+  document.getElementById('jd-dur').textContent=j.dur;
+  document.getElementById('jd-open').textContent=j.open;
+  document.getElementById('jd-req').textContent=j.req;
+  var btn=document.getElementById('jd-apply-btn');
+  if(appliedJobs[i]){btn.textContent='✓ Application sent';btn.className='action-btn done';}
+  else{btn.textContent='Apply for this job →';btn.className='action-btn';}
+  nav('s-job-detail');
+}
+
+function applyJob(){
+  if(appliedJobs[currentJob]){showToast('Already applied to this job!');return;}
+  appliedJobs[currentJob]=true;
+  document.getElementById('jd-apply-btn').textContent='✓ Application sent';
+  document.getElementById('jd-apply-btn').className='action-btn done';
+  showToast('🎉 Application sent successfully!');
+}
+
+function filterJobs(){
+  var q=document.getElementById('job-search').value.toLowerCase();
+  var cards=document.querySelectorAll('.jcard');
+  cards.forEach(function(c,i){
+    var j=jobData[i];
+    var typeMatch=filterVal==='All'||j.type===filterVal||j.type.toLowerCase().indexOf(filterVal.toLowerCase())>=0;
+    var searchMatch=q===''||(j.title+j.loc+j.type+j.farmer).toLowerCase().indexOf(q)>=0;
+    c.style.display=(typeMatch&&searchMatch)?'flex':'none';
+  });
+}
+
+function setFilter(el,val){
+  document.querySelectorAll('.fc').forEach(function(f){f.classList.remove('on');});
+  el.classList.add('on');filterVal=val;filterJobs();
+}
+
+function markRead(el){
+  var dot=el.querySelector('.ndot');
+  var txt=el.querySelector('.ntxt');
+  dot.classList.add('read');
+  txt.style.color='#888';
+}
+
+(function buildAttGrid(){
+  var g=document.getElementById('att-grid');
+  if(!g)return;
+  var absent=[3,7,14,20];
+  for(var i=1;i<=22;i++){
+    var d=document.createElement('div');
+    var a=absent.indexOf(i)>=0;
+    d.className='att-day '+(a?'att-a':'att-p');
+    d.textContent=i;
+    g.appendChild(d);
+  }
+})();
+</script>
+</body>
+</html>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPndF78LEI-euQzzogrAoWKUmTCZwwopY",
+    authDomain: "farmconnect-81d6b.firebaseapp.com",
+    projectId: "farmconnect-81d6b",
+    storageBucket: "farmconnect-81d6b.firebasestorage.app",
+    messagingSenderId: "356513000880",
+    appId: "1:356513000880:web:0993cac5e7b6a5ac1f7a75",
+    measurementId: "G-E42BB5DW22"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script><!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+  const db = createClient(
+    'https://vzigfwyvkvcenxvxalqw.supabase.co',
+    'sb_publishable_ZRNQwchsEolqNyAzCw1Kjw_eD6u9Q64'
+  );
+  console.log("Supabase connected!");
+</script>
