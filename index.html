@@ -148,14 +148,114 @@ html,body{height:100%;background:#111;display:flex;justify-content:center;align-
 .att-a{background:#222;color:#555;}
 
 .notif-list{padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+.auth-screen{display:none;flex-direction:column;flex:1;overflow-y:auto;background:var(--bg);}
+.auth-screen.active{display:flex;}
+.auth-hero{background:var(--green);padding:52px 24px 36px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;}
+.auth-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.auth-hero::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,0.1);}
+.auth-logo{font-size:38px;margin-bottom:8px;position:relative;z-index:1;}
+.auth-app-name{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em;position:relative;z-index:1;}
+.auth-tagline{font-size:12px;color:rgba(255,255,255,0.75);margin-top:5px;font-weight:500;position:relative;z-index:1;}
+.auth-body{padding:28px 20px;display:flex;flex-direction:column;gap:14px;flex:1;}
+.auth-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.auth-subtitle{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:8px;}
+.input-group{display:flex;flex-direction:column;gap:6px;}
+.input-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
+.auth-input{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;font-size:14px;color:var(--text);font-family:'Nunito',sans-serif;font-weight:600;outline:none;width:100%;transition:border-color .2s;}
+.auth-input:focus{border-color:var(--green);}
+.auth-input::placeholder{color:#444;font-weight:500;}
+.auth-btn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;width:100%;font-family:'Nunito',sans-serif;transition:transform .1s,background .2s;margin-top:4px;}
+.auth-btn:active{transform:scale(.97);background:var(--green-dark);}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:4px 0;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-divider span{font-size:11px;color:#444;font-weight:600;}
+.auth-switch{text-align:center;font-size:13px;color:var(--muted);font-weight:500;}
+.auth-switch a{color:var(--green);font-weight:700;cursor:pointer;text-decoration:none;}
+.auth-error{background:#3a1a1a;border:1px solid #5a2a2a;border-radius:10px;padding:10px 14px;font-size:12px;color:#f08080;font-weight:600;display:none;}
+.auth-error.show{display:block;}
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.role-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.role-card.selected{border-color:var(--green);background:#0f2a1e;}
+.role-icon{font-size:26px;margin-bottom:6px;}
+.role-lbl{font-size:12px;font-weight:700;color:var(--muted);}
+.role-card.selected .role-lbl{color:var(--green);}
 </style>
 </head>
 <body>
 <div class="device" id="app">
   <div class="toast" id="toast"></div>
+<!-- LOGIN -->
+<div class="auth-screen active" id="s-login">
+  <div class="auth-hero">
+    <div class="auth-logo">🌾</div>
+    <div class="auth-app-name">FarmConnect</div>
+    <div class="auth-tagline">Connecting laborers with farmers</div>
+  </div>
+  <div class="auth-body">
+    <div>
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-subtitle">Sign in to your account</div>
+    </div>
+    <div class="auth-error" id="login-error">Incorrect phone or password.</div>
+    <div class="input-group">
+      <div class="input-lbl">Phone number</div>
+      <input class="auth-input" type="tel" id="login-phone" placeholder="+91 00000 00000">
+    </div>
+    <div class="input-group">
+      <div class="input-lbl">Password</div>
+      <input class="auth-input" type="password" id="login-pass" placeholder="Enter your password">
+    </div>
+    <button class="auth-btn" onclick="doLogin()">Sign in →</button>
+    <div class="auth-divider"><span>or</span></div>
+    <div class="auth-switch">No account? <a onclick="nav('s-signup')">Create one</a></div>
+  </div>
+</div>
 
+<!-- SIGNUP -->
+<div class="auth-screen" id="s-signup">
+  <div class="auth-hero">
+    <div class="auth-logo">🌾</div>
+    <div class="auth-app-name">FarmConnect</div>
+    <div class="auth-tagline">Join thousands of farm workers</div>
+  </div>
+  <div class="auth-body">
+    <div>
+      <div class="auth-title">Create account</div>
+      <div class="auth-subtitle">Fill in your details to get started</div>
+    </div>
+    <div class="auth-error" id="signup-error">Please fill in all fields.</div>
+    <div class="input-group">
+      <div class="input-lbl">Full name</div>
+      <input class="auth-input" type="text" id="signup-name" placeholder="Your full name">
+    </div>
+    <div class="input-group">
+      <div class="input-lbl">Phone number</div>
+      <input class="auth-input" type="tel" id="signup-phone" placeholder="+91 00000 00000">
+    </div>
+    <div class="input-group">
+      <div class="input-lbl">I am a</div>
+      <div class="role-row">
+        <div class="role-card selected" id="role-laborer" onclick="selectRole('laborer')">
+          <div class="role-icon">👷</div>
+          <div class="role-lbl">Farm Laborer</div>
+        </div>
+        <div class="role-card" id="role-farmer" onclick="selectRole('farmer')">
+          <div class="role-icon">🧑‍🌾</div>
+          <div class="role-lbl">Farmer</div>
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-lbl">Password</div>
+      <input class="auth-input" type="password" id="signup-pass" placeholder="Create a password">
+    </div>
+    <button class="auth-btn" onclick="doSignup()">Create account →</button>
+    <div class="auth-divider"><span>or</span></div>
+    <div class="auth-switch">Have an account? <a onclick="nav('s-login')">Sign in</a></div>
+  </div>
+</div>
   <!-- HOME -->
-  <div class="screen active" id="s-home">
+  <div class="screen" id="s-home">
     <div class="topbar">
       <div class="topbar-row">
         <div><div class="greet-sm">Good morning,</div><div class="greet-name">Namitha</div></div>
@@ -431,6 +531,60 @@ html,body{height:100%;background:#111;display:flex;justify-content:center;align-
 </div>
 
 <script>
+var selectedRole='laborer';
+var registeredUsers=[
+  {phone:'+91 95131 05575',pass:'farm123',name:'Namitha'}
+];
+
+function selectRole(r){
+  selectedRole=r;
+  document.getElementById('role-laborer').className='role-card'+(r==='laborer'?' selected':'');
+  document.getElementById('role-farmer').className='role-card'+(r==='farmer'?' selected':'');
+}
+
+function doLogin(){
+  var phone=document.getElementById('login-phone').value.trim();
+  var pass=document.getElementById('login-pass').value.trim();
+  var err=document.getElementById('login-error');
+  var user=registeredUsers.find(function(u){return u.phone.replace(/\s/g,")==phone.replace(/\s/g,")&&u.pass===pass;});
+  if(!phone||!pass){err.textContent='Please enter phone and password.';err.style.display='block';return;}
+  if(!user){err.textContent='Incorrect phone or password. Try again.';err.style.display='block';return;}
+  err.style.display='none';
+  document.querySelectorAll('.greet-name').forEach(function(el){el.textContent=user.name;});
+  document.querySelector('.pname').textContent=user.name;
+  document.querySelectorAll('.av,.pav').forEach(function(el){el.textContent=user.name[0];});
+  showToast('👋 Welcome back, '+user.name+'!');
+  navMain('s-home');
+}
+
+function doSignup(){
+  var name=document.getElementById('signup-name').value.trim();
+  var phone=document.getElementById('signup-phone').value.trim();
+  var pass=document.getElementById('signup-pass').value.trim();
+  var err=document.getElementById('signup-error');
+  if(!name||!phone||!pass){err.textContent='Please fill in all fields.';err.style.display='block';return;}
+  if(registeredUsers.find(function(u){return u.phone.replace(/\s/g,")==phone.replace(/\s/g,");})){
+    err.textContent='Phone already registered.';err.style.display='block';return;
+  }
+  err.style.display='none';
+  registeredUsers.push({phone:phone,pass:pass,name:name});
+  document.getElementById('login-phone').value=phone;
+  document.getElementById('login-pass').value=pass;
+  showToast('✅ Account created! Sign in now.');
+  navMain('s-login');
+}
+
+function navMain(id){
+  document.querySelectorAll('.screen,.auth-screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  var isAuth=(id==='s-login'||id==='s-signup');
+  var detail=['s-task-detail','s-job-detail'];
+  document.getElementById('bnav').style.display=(isAuth||detail.indexOf(id)>=0)?'none':'flex';
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var map={'s-home':'ni-home','s-jobs':'ni-jobs','s-report':'ni-report','s-notif':'ni-notif','s-profile':'ni-profile'};
+  if(map[id])document.getElementById(map[id]).classList.add('on');
+  var el=document.getElementById(id);if(el)el.scrollTop=0;
+}
 var checkedIn=false;
 var currentTask=0,currentJob=0;
 var filterVal='All';
