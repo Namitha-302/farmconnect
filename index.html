@@ -620,9 +620,8 @@ html,body{height:100%;background:#111;display:flex;justify-content:center;align-
 
 <script>
 var selectedRole='laborer';
-var registeredUsers=[
-  {phone:'+91 95131 05575',pass:'farm123',name:'Namitha'}
-];
+// Note: Using API-based authentication from auth-api.js instead of in-memory storage
+var registeredUsers=[]; // Keeping empty for backward compatibility
 
 function selectRole(r){
   selectedRole=r;
@@ -630,37 +629,16 @@ function selectRole(r){
   document.getElementById('role-farmer').className='role-card'+(r==='farmer'?' selected':'');
 }
 
+// Legacy doLogin - replaced by API version in auth-api.js
 function doLogin(){
-  var phone=document.getElementById('login-phone').value.trim();
-  var pass=document.getElementById('login-pass').value.trim();
-  var err=document.getElementById('login-error');
-  var user=registeredUsers.find(function(u){return u.phone.replace(/\s/g,")==phone.replace(/\s/g,")&&u.pass===pass;});
-  if(!phone||!pass){err.textContent='Please enter phone and password.';err.style.display='block';return;}
-  if(!user){err.textContent='Incorrect phone or password. Try again.';err.style.display='block';return;}
-  err.style.display='none';
-  document.querySelectorAll('.greet-name').forEach(function(el){el.textContent=user.name;});
-  document.querySelector('.pname').textContent=user.name;
-  document.querySelectorAll('.av,.pav').forEach(function(el){el.textContent=user.name[0];});
-  showToast('👋 Welcome back, '+user.name+'!');
-  navMain('s-home');
+  // Now handled by auth-api.js doLogin function
+  return;
 }
 
+// Legacy doSignup - replaced by API version in auth-api.js
 function doSignup(){
-  var name=document.getElementById('signup-name').value.trim();
-  var phone=document.getElementById('signup-phone').value.trim();
-  var pass=document.getElementById('signup-pass').value.trim();
-  var err=document.getElementById('signup-error');
-  if(!name||!phone||!pass){err.textContent='Please fill in all fields.';err.style.display='block';return;}
-  if(registeredUsers.find(function(u){return u.phone.replace(/\s/g,")==phone.replace(/\s/g,");})){
-    err.textContent='Phone already registered.';err.style.display='block';return;
-  }
-  err.style.display='none';
-  registeredUsers.push({phone:phone,pass:pass,name:name});
-  document.getElementById('login-phone').value=phone;
-  document.getElementById('login-pass').value=pass;
-  showToast('✅ Account created! Sign in now.');
-  navMain('s-login');
-}
+  // Now handled by auth-api.js doSignup function
+  return;
 
 function navMain(id){
   document.querySelectorAll('.screen,.auth-screen').forEach(function(s){s.classList.remove('active');});
@@ -935,3 +913,6 @@ function markRead(el){
   );
   console.log("Supabase connected!");
 </script>
+
+<!-- Local Backend API for Auth & Phone Validation -->
+<script src="auth-api.js"></script>

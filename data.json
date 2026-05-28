@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": 1779986396915,
+      "name": "Yashwanth",
+      "phone": "+91 8792905575",
+      "role": "laborer",
+      "password": "password123",
+      "createdAt": "2026-05-28T16:39:56.915Z"
+    },
+    {
+      "id": 1779986425556,
+      "name": "Namitha",
+      "phone": "+91 7022383298",
+      "role": "laborer",
+      "password": "pass@123",
+      "createdAt": "2026-05-28T16:40:25.556Z"
+    },
+    {
+      "id": 1779986560391,
+      "name": "Deekshitha",
+      "phone": "+91 9353604798",
+      "role": "laborer",
+      "password": "deekshitha@123",
+      "createdAt": "2026-05-28T16:42:40.391Z"
+    },
+    {
+      "id": 1779986575675,
+      "name": "Vismay",
+      "phone": "+91 9740400138",
+      "role": "laborer",
+      "password": "vismay@pass123",
+      "createdAt": "2026-05-28T16:42:55.675Z"
+    }
+  ]
+}
