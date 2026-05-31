@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmConnect Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b10;
+      --card: #121622;
+      --card-soft: #161d2d;
+      --border: #24314a;
+      --text: #f1f5fb;
+      --muted: #8c9bb5;
+      --green: #1db97a;
+      --green-dark: #0f6e56;
+      --red: #e24b4a;
+      --blue: #4da8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(29,185,122,0.14), transparent 32%),
+                  linear-gradient(180deg, #0c1118 0%, #080b12 100%);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .admin-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-title {
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .admin-subtitle {
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.6;
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(29,185,122,0.25);
+    }
+
+    .button.secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 110px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .table-card {
+      background: var(--card-soft);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+
+    .table-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .table-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .table-search {
+      min-width: 220px;
+      max-width: 100%;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .table-search input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #111827;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .table-search input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(29,185,122,0.08);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+
+    thead {
+      background: rgba(255,255,255,0.03);
+    }
+
+    th, td {
+      padding: 14px 16px;
+      color: var(--text);
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 14px;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-laborer { background: rgba(29,185,122,0.15); color: var(--green); }
+    .badge-farmer { background: rgba(77,168,255,0.15); color: var(--blue); }
+
+    .empty-state {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .note-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .note-bar span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @media (max-width: 860px) {
+      .stats-grid,
+      .table-header {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrap {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="admin-title">FarmConnect Admin Panel</div>
+        <div class="admin-subtitle">View registered users, role distribution, and signup activity. This page pulls data from your backend and updates automatically on refresh.</div>
+      </div>
+      <div class="admin-actions">
+        <button class="button primary" onclick="loadUsers()">Refresh data</button>
+        <a class="button secondary" href="index.html">Open user view</a>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total users</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-note">Total registered users in the system.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Laborers</div>
+        <div class="stat-value" id="stat-laborers">0</div>
+        <div class="stat-note">Users registered as farm laborers.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Farmers</div>
+        <div class="stat-value" id="stat-farmers">0</div>
+        <div class="stat-note">Users registered as farmers.</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h2>Registered users</h2>
+        <div class="table-search">
+          <input id="userSearch" type="search" placeholder="Search by name, phone or role" oninput="filterUsers()" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Signup date</th>
+            </tr>
+          </thead>
+          <tbody id="userTable">
+            <tr><td colspan="4">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-bar">
+        <span>💡</span>
+        <span>Data comes from <strong>/api/users</strong>. Refresh or reopen the page after new signups.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    let users = [];
+
+    async function loadUsers() {
+      const table = document.getElementById('userTable');
+      const total = document.getElementById('stat-total');
+      const laborers = document.getElementById('stat-laborers');
+      const farmers = document.getElementById('stat-farmers');
+
+      table.innerHTML = '<tr><td colspan="4">Loading users...</td></tr>';
+
+      try {
+        const response = await fetch(`${API_URL}/users`);
+        if (!response.ok) throw new Error('Unable to fetch users');
+        users = await response.json();
+
+        const laborerCount = users.filter(u => u.role === 'laborer').length;
+        const farmerCount = users.filter(u => u.role === 'farmer').length;
+
+        total.textContent = users.length;
+        laborers.textContent = laborerCount;
+        farmers.textContent = farmerCount;
+
+        if (!users.length) {
+          table.innerHTML = '<tr><td colspan="4">No users found yet.</td></tr>';
+          return;
+        }
+
+        renderTable(users);
+      } catch (error) {
+        table.innerHTML = '<tr><td colspan="4">Unable to load users. Check server connection.</td></tr>';
+        total.textContent = '—';
+        laborers.textContent = '—';
+        farmers.textContent = '—';
+        console.error(error);
+      }
+    }
+
+    function renderTable(data) {
+      const table = document.getElementById('userTable');
+      table.innerHTML = data.map(user => {
+        const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
+        return `
+          <tr>
+            <td>${escapeHtml(user.name || '—')}</td>
+            <td>${escapeHtml(user.phone || '—')}</td>
+            <td><span class="badge ${user.role === 'farmer' ? 'badge-farmer' : 'badge-laborer'}">${escapeHtml(capitalize(user.role || 'user'))}</span></td>
+            <td>${escapeHtml(date)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterUsers() {
+      const query = document.getElementById('userSearch').value.trim().toLowerCase();
+      if (!query) {
+        renderTable(users);
+        return;
+      }
+      const filtered = users.filter(u => {
+        return [u.name, u.phone, u.role].some(value =>
+          String(value || '').toLowerCase().includes(query)
+        );
+      });
+      if (!filtered.length) {
+        document.getElementById('userTable').innerHTML = '<tr><td colspan="4">No matching users found.</td></tr>';
+      } else {
+        renderTable(filtered);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(ch) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch];
+      });
+    }
+
+    function capitalize(value) {
+      return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

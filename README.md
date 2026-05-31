@@ -1,5 +1,7 @@
 # FarmConnect - Local Backend Setup
 
+This project was developed, debugged, and enhanced using the **Antigravity** AI coding assistant along with various other advanced AI tools.
+
 This setup stores user data in a JSON file and prevents duplicate phone number registrations.
 
 ## Files Created:

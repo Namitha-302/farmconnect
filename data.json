@@ -31,6 +31,38 @@
       "role": "laborer",
       "password": "vismay@pass123",
       "createdAt": "2026-05-28T16:42:55.675Z"
+    },
+    {
+      "id": 1780073823429,
+      "name": "PUNITH KUMAR BS",
+      "phone": "6361846450",
+      "role": "laborer",
+      "password": "pass@123",
+      "createdAt": "2026-05-29T16:57:03.429Z"
+    },
+    {
+      "id": 1780217445482,
+      "name": "Test User",
+      "phone": "1234567890",
+      "role": "laborer",
+      "password": "password123",
+      "createdAt": "2026-05-31T08:50:45.482Z"
+    },
+    {
+      "id": 1780217753732,
+      "name": "PRASUNA S",
+      "phone": "+917619442340",
+      "role": "farmer",
+      "password": "123456",
+      "createdAt": "2026-05-31T08:55:53.732Z"
+    },
+    {
+      "id": 9988776655,
+      "name": "Admin",
+      "phone": "9988776655",
+      "role": "admin",
+      "password": "admin@123",
+      "createdAt": "2026-05-31T00:00:00.000Z"
     }
   ]
 }
