@@ -91,6 +91,20 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ success: false, message: 'Phone and password are required' });
   }
 
+  // Handle Admin Login
+  if (phone === '9988776655' && password === 'admin@123') {
+    return res.json({
+      success: true,
+      message: 'Admin login successful!',
+      user: {
+        id: 9988776655,
+        name: 'Admin',
+        phone: '9988776655',
+        role: 'admin'
+      }
+    });
+  }
+
   const data = readData();
   const user = data.users.find(u => u.phone === phone && u.password === password);
 

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - FarmConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --green: #1db97a;
+      --green-dark: #0f6e56;
+      --green-light: #e1f5ee;
+      --bg: #0d0d0d;
+      --card: #1e1e1e;
+      --card2: #161616;
+      --text: #f0f0f0;
+      --muted: #888;
+      --border: #2a2a2a;
+      --red: #e24b4a;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 420px;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .signup-hero {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+      padding: 60px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signup-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .signup-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: -30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .signup-logo {
+      font-size: 48px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .signup-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+    }
+
+    .signup-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    .signup-body {
+      padding: 32px 20px 28px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-header {
+      margin-bottom: 4px;
+    }
+
+    .form-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .form-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .input-field {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(29, 185, 122, 0.1);
+    }
+
+    .input-field::placeholder {
+      color: #444;
+      font-weight: 500;
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .role-option {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .role-option:active {
+      transform: scale(0.98);
+    }
+
+    .role-option.selected {
+      border-color: var(--green);
+      background: rgba(29, 185, 122, 0.08);
+    }
+
+    .role-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .role-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .role-option.selected .role-label {
+      color: var(--green);
+    }
+
+    .password-strength {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: #2a2a2a;
+      transition: background 0.3s;
+    }
+
+    .strength-bar.weak {
+      background: #e24b4a;
+    }
+
+    .strength-bar.medium {
+      background: #f0a030;
+    }
+
+    .strength-bar.strong {
+      background: var(--green);
+    }
+
+    .strength-text {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .error-message {
+      background: rgba(226, 75, 74, 0.1);
+      border: 1px solid rgba(226, 75, 74, 0.3);
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 12px;
+      color: #f08080;
+      font-weight: 600;
+      display: none;
+      margin-bottom: 2px;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .success-message {
+      background: rgba(29, 185, 122, 0.1);
+      border: 1px solid rgba(29, 185, 122, 0.3);
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 12px;
+      color: #7effbd;
+      font-weight: 600;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .signup-button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .signup-button:active {
+      transform: scale(0.97);
+      background: var(--green-dark);
+    }
+
+    .signup-button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      font-size: 11px;
+      color: #444;
+      font-weight: 600;
+    }
+
+    .form-footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      padding-bottom: 20px;
+    }
+
+    .form-footer a {
+      color: var(--green);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .loading {
+      display: none;
+    }
+
+    .loading.show {
+      display: inline-block;
+    }
+
+    @media (max-width: 480px) {
+      .signup-container {
+        max-width: 100%;
+      }
+
+      .signup-body {
+        padding: 24px 16px 20px;
+      }
+
+      .signup-hero {
+        padding: 48px 20px 32px;
+      }
+
+      .signup-logo {
+        font-size: 42px;
+      }
+
+      .signup-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <!-- Hero Section -->
+    <div class="signup-hero">
+      <div class="signup-logo">🌾</div>
+      <div class="signup-title">FarmConnect</div>
+      <div class="signup-subtitle">Join thousands of farm workers & farmers</div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="signup-body">
+      <div class="form-section">
+        <div class="form-header">
+          <div class="form-title">Create your account</div>
+          <div class="form-subtitle">Get started in just a few steps</div>
+        </div>
+
+        <div id="success-message" class="success-message"></div>
+        <div id="error-message" class="error-message"></div>
+
+        <!-- Full Name -->
+        <div class="input-group">
+          <div class="input-label">Full name</div>
+          <input 
+            type="text" 
+            id="fullName" 
+            class="input-field" 
+            placeholder="Enter your full name"
+            autocomplete="name"
+          >
+        </div>
+
+        <!-- Phone Number -->
+        <div class="input-group">
+          <div class="input-label">Phone number</div>
+          <input 
+            type="tel" 
+            id="phone" 
+            class="input-field" 
+            placeholder="Enter 10-digit phone number"
+            autocomplete="tel"
+          >
+        </div>
+
+        <!-- Role Selection -->
+        <div class="input-group">
+          <div class="input-label">I am a</div>
+          <div class="role-selector">
+            <div class="role-option selected" id="role-laborer" onclick="selectRole('laborer')">
+              <div class="role-icon">👷</div>
+              <div class="role-label">Farm Laborer</div>
+            </div>
+            <div class="role-option" id="role-farmer" onclick="selectRole('farmer')">
+              <div class="role-icon">🧑‍🌾</div>
+              <div class="role-label">Farmer</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <div class="input-label">Create password</div>
+          <input 
+            type="password" 
+            id="password" 
+            class="input-field" 
+            placeholder="Create a strong password"
+            autocomplete="new-password"
+            oninput="checkPasswordStrength()"
+          >
+          <div class="password-strength">
+            <div class="strength-bar" id="strength-1"></div>
+            <div class="strength-bar" id="strength-2"></div>
+            <div class="strength-bar" id="strength-3"></div>
+          </div>
+          <div class="strength-text" id="strength-text">Use at least 6 characters</div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="input-group">
+          <div class="input-label">Confirm password</div>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            class="input-field" 
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <!-- Signup Button -->
+        <button class="signup-button" onclick="handleSignup()">
+          <span id="button-text">Create account →</span>
+          <span id="button-loading" class="loading">Creating...</span>
+        </button>
+
+        <div class="divider"><span>or</span></div>
+
+        <!-- Footer -->
+        <div class="form-footer">
+          Already have an account? <a href="index.html">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    let selectedRole = 'laborer';
+
+    // Select role
+    function selectRole(role) {
+      selectedRole = role;
+      document.getElementById('role-laborer').classList.toggle('selected', role === 'laborer');
+      document.getElementById('role-farmer').classList.toggle('selected', role === 'farmer');
+    }
+
+    // Check password strength
+    function checkPasswordStrength() {
+      const password = document.getElementById('password').value;
+      const strength1 = document.getElementById('strength-1');
+      const strength2 = document.getElementById('strength-2');
+      const strength3 = document.getElementById('strength-3');
+      const strengthText = document.getElementById('strength-text');
+
+      // Reset
+      strength1.classList.remove('weak', 'medium', 'strong');
+      strength2.classList.remove('weak', 'medium', 'strong');
+      strength3.classList.remove('weak', 'medium', 'strong');
+
+      if (password.length === 0) {
+        strengthText.textContent = 'Use at least 6 characters';
+        return;
+      }
+
+      let strength = 0;
+
+      // Length check
+      if (password.length >= 6) strength++;
+      if (password.length >= 12) strength++;
+
+      // Character variety check
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+      strength = Math.min(3, Math.ceil(strength / 2));
+
+      if (strength === 1) {
+        strength1.classList.add('weak');
+        strengthText.textContent = 'Weak password';
+      } else if (strength === 2) {
+        strength1.classList.add('medium');
+        strength2.classList.add('medium');
+        strengthText.textContent = 'Medium strength';
+      } else if (strength === 3) {
+        strength1.classList.add('strong');
+        strength2.classList.add('strong');
+        strength3.classList.add('strong');
+        strengthText.textContent = 'Strong password';
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorEl = document.getElementById('error-message');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => {
+        errorEl.classList.remove('show');
+      }, 3500);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successEl = document.getElementById('success-message');
+      successEl.textContent = message;
+      successEl.classList.add('show');
+      setTimeout(() => {
+        successEl.classList.remove('show');
+      }, 3500);
+    }
+
+    // Handle signup
+    async function handleSignup() {
+      const fullName = document.getElementById('fullName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const button = document.querySelector('.signup-button');
+      const buttonText = document.getElementById('button-text');
+      const buttonLoading = document.getElementById('button-loading');
+
+      // Validation
+      if (!fullName) {
+        showError('Please enter your full name.');
+        return;
+      }
+
+      if (!phone || phone.length < 10) {
+        showError('Please enter a valid phone number (10+ digits).');
+        return;
+      }
+
+      if (!password || password.length < 6) {
+        showError('Password must be at least 6 characters.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Passwords do not match.');
+        return;
+      }
+
+      // Disable button
+      button.disabled = true;
+      buttonText.style.display = 'none';
+      buttonLoading.classList.add('show');
+
+      try {
+        const response = await fetch(`${API_URL}/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: fullName,
+            phone: phone,
+            role: selectedRole,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showSuccess('✓ Account created successfully! Redirecting to login...');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } else {
+          showError(data.message || 'Signup failed. Please try again.');
+          button.disabled = false;
+          buttonText.style.display = 'inline';
+          buttonLoading.classList.remove('show');
+        }
+      } catch (err) {
+        showError('Network error. Please check your connection.');
+        button.disabled = false;
+        buttonText.style.display = 'inline';
+        buttonLoading.classList.remove('show');
+      }
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSignup();
+      }
+    });
+  </script>
+</body>
+</html>
